@@ -3,6 +3,13 @@
   <!-- Import FR5 URDF -->
   <xacro:include filename="$(find fairino_description)/urdf/fairino5_v6.urdf" />
 
+  <!-- World link and fixed joint to base -->
+  <link name="world" />
+  <joint name="world_to_base" type="fixed">
+    <parent link="world" />
+    <child link="base_link" />
+  </joint>
+
   <xacro:arg name="initial_positions_file" default="$(find fr5_mock_config)/config/initial_positions.yaml" />
   <xacro:property name="initial_positions" value="${xacro.load_yaml('$(arg initial_positions_file)')['initial_positions']}" />
 
