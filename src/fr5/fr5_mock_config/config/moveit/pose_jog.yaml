@@ -1,0 +1,3 @@
+# Planning groups to use in PoseJog, and their corresponding VFC controllers.
+planning_groups: ['manipulator']
+controllers: ['velocity_force_controller']

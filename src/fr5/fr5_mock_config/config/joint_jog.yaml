@@ -1,0 +1,3 @@
+# Planning groups to use in JointJog, and their corresponding JVC controllers.
+planning_groups: ['manipulator']
+controllers: ['joint_velocity_controller']
