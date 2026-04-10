@@ -1,0 +1,75 @@
+- description: ''
+  favorite: false
+  joint_group_names:
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: world
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Home
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j6
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    position:
+    - -1.8234468711982206e-10
+    - 2.4313176542627503e-06
+    - -1.0617663924224987
+    - 0.9937864600179634
+    - 0.06797993261025956
+    - 1.3783732481558446
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: WP2

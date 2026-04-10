@@ -1,0 +1,25 @@
+#
+# MoveIt Pro hardware configuration for the Fairino FR5 robot.
+# Inherits from the fairino_mock configuration.
+#
+
+based_on_package: "fairino_mock"
+
+hardware:
+  simulated: false
+  robot_description:
+    urdf:
+      package: "fairino_hw"
+      path: "description/fr5.xacro"
+    urdf_params:
+      - robot_ip: "192.168.58.2"
+  robot_driver_persist_launch_file:
+    package: "fairino_hw"
+    path: "launch/robot_drivers.launch.py"
+
+ros2_control:
+  controllers_active_at_startup:
+    - "joint_state_broadcaster"
+    - "joint_trajectory_controller"
+  controllers_inactive_at_startup: []
+  controllers_not_managed: []
