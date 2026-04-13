@@ -17,9 +17,3 @@ hardware:
     package: "fairino_hw"
     path: "launch/robot_drivers.launch.py"
 
-ros2_control:
-  controllers_active_at_startup:
-    - "joint_state_broadcaster"
-    - "joint_trajectory_controller"
-  controllers_inactive_at_startup: []
-  controllers_not_managed: []
