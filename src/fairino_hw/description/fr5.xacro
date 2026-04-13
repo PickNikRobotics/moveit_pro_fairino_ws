@@ -26,26 +26,32 @@
     <joint name="j1">
       <command_interface name="position" />
       <state_interface name="position" />
+      <state_interface name="velocity" />
     </joint>
     <joint name="j2">
       <command_interface name="position" />
       <state_interface name="position" />
+      <state_interface name="velocity" />
     </joint>
     <joint name="j3">
       <command_interface name="position" />
       <state_interface name="position" />
+      <state_interface name="velocity" />
     </joint>
     <joint name="j4">
       <command_interface name="position" />
       <state_interface name="position" />
+      <state_interface name="velocity" />
     </joint>
     <joint name="j5">
       <command_interface name="position" />
       <state_interface name="position" />
+      <state_interface name="velocity" />
     </joint>
     <joint name="j6">
       <command_interface name="position" />
       <state_interface name="position" />
+      <state_interface name="velocity" />
     </joint>
   </ros2_control>
 </robot>

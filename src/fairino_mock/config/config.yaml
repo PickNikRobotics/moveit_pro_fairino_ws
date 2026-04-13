@@ -72,8 +72,8 @@ ros2_control:
     path: "config/control/ros2_controllers.yaml"
   controllers_active_at_startup:
     - "joint_state_broadcaster"
-  controllers_inactive_at_startup:
     - "joint_trajectory_admittance_controller"
+  controllers_inactive_at_startup:
     - "velocity_force_controller"
     - "joint_velocity_controller"
   controllers_not_managed: []

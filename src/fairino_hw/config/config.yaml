@@ -13,7 +13,10 @@ hardware:
       path: "description/fr5.xacro"
     urdf_params:
       - robot_ip: "192.168.58.2"
+  # robot_driver_persist_launch_file:
+  #   package: "fairino_hw"
+  #   path: "launch/robot_drivers.launch.py"
   robot_driver_persist_launch_file:
-    package: "fairino_hw"
-    path: "launch/robot_drivers.launch.py"
+    package: "moveit_studio_agent"
+    path: "launch/blank.launch.py"
 
