@@ -16,4 +16,3 @@ hardware:
   robot_driver_persist_launch_file:
     package: "fairino_hw"
     path: "launch/robot_drivers.launch.py"
-
