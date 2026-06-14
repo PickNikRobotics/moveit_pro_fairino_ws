@@ -41,7 +41,7 @@ joint_trajectory_admittance_controller:
     state_publish_rate: 50
     jacobian_damping: 0.01
     gravity_vector: [0.0, 0.0, -9.8]
-    default_path_tolerance: 0.05
+    default_path_tolerance: 0.2
     default_goal_tolerance: 0.05
     default_absolute_force_torque_threshold: [45.0, 45.0, 45.0, 10.0, 10.0, 10.0]
 
