@@ -76,5 +76,6 @@ ros2_control:
   controllers_inactive_at_startup:
     - "velocity_force_controller"
     - "joint_velocity_controller"
+    - "joint_trajectory_controller"
   controllers_not_managed: []
   controller_shared_topics: []
