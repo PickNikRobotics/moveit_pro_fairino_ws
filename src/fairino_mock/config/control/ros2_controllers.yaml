@@ -27,7 +27,6 @@ joint_state_broadcaster:
     interfaces:
       - position
       - velocity
-      - effort
 
 joint_trajectory_admittance_controller:
   ros__parameters:
