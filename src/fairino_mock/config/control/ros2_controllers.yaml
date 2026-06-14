@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 600  # Hz
+    update_rate: 125  # Hz - the FR5 rejects faster ServoJ rates (error 14); matches the driver's 8 ms cmdT. See README.
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
