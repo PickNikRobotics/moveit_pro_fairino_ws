@@ -20,3 +20,31 @@ hardware:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
 
+# The objectives section is overridden as a whole (it is not deep-merged with
+# the based_on_package parent), so it is re-declared here mirroring fairino_mock,
+# differing only in waypoints_file: hardware uses its OWN (empty) waypoints file
+# so unsafe demo poses cannot be driven on the real robot.
+objectives:
+  behavior_loader_plugins:
+    core:
+      - "moveit_pro::behaviors::CoreBehaviorsLoader"
+      - "moveit_pro::behaviors::MTCCoreBehaviorsLoader"
+      - "moveit_pro::behaviors::VisionBehaviorsLoader"
+      - "moveit_pro::behaviors::ConverterBehaviorsLoader"
+  objective_library_paths:
+    core_objectives:
+      package_name: "moveit_pro_objectives"
+      relative_path: "objectives/core"
+    motion_objectives:
+      package_name: "moveit_pro_objectives"
+      relative_path: "objectives/motion"
+    perception_objectives:
+      package_name: "moveit_pro_objectives"
+      relative_path: "objectives/perception"
+    fr5_objectives:
+      package_name: "fairino_mock"
+      relative_path: "objectives"
+  waypoints_file:
+    package_name: "fairino_hw"
+    relative_path: "waypoints/fr5_waypoints.yaml"
+

@@ -4,6 +4,6 @@ project(fairino_hw)
 find_package(ament_cmake REQUIRED)
 
 # Install configuration files
-install(DIRECTORY config description launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY config description launch waypoints DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()

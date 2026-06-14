@@ -48,19 +48,57 @@
         nanosec: 0
         sec: 0
     name:
-    - j6
     - j1
     - j2
     - j3
     - j4
     - j5
+    - j6
     position:
-    - -1.8234468711982206e-10
-    - 2.4313176542627503e-06
-    - -1.0617663924224987
-    - 0.9937864600179634
-    - 0.06797993261025956
-    - 1.3783732481558446
+    - 1.7482217112542646
+    - -1.1085327476831854
+    - -1.7155638994388407
+    - -2.058237763747353
+    - 0.0014846199813337282
+    - 0.027049700144205
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: WP1
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - 1.1662772040720193
+    - -0.7856222018241511
+    - -1.0405363860990644
+    - -1.6616846884771208
+    - 0.5368477024158205
+    - 0.8966117705191573
     velocity: []
   multi_dof_joint_state:
     header:
