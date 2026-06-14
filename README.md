@@ -90,3 +90,32 @@ A reply means you're on the robot's network and ready to launch the driver.
 >   with no live cable. Confirm `ROBOT_IFACE` is the interface showing
 >   `LOWER_UP`, then rebind: `sudo nmcli con mod fairino connection.interface-name "$ROBOT_IFACE" && sudo nmcli con up fairino`.
 > - To remove this connection later: `sudo nmcli con delete fairino`.
+
+### 4. Prepare the robot before launching the driver
+
+The MoveIt Pro driver streams `ServoJ` position commands to the controller. The
+controller will only accept them when the arm is **enabled**, in **Automatic
+mode**, and **not already controlled by another client**. If these aren't set,
+the driver connects successfully but every command is rejected — you'll see
+`ServoJ指令下发错误,错误码:99` (`ServoJ command failed, error code: 99`) repeating
+in the `drivers` logs.
+
+Using the FR web interface (`http://192.168.58.2`, default login `admin` / `123`):
+
+1. **Switch to Automatic mode.** Open the mode panel (the circular-arrows icon in
+   the top toolbar). It shows *"Current robot mode"* — click **"Click to switch
+   modes"** until it reads **"Automatic mode"**. (On control boxes with a physical
+   key switch, rotate it to the automatic position instead.) The end-of-arm LED
+   color changes with the mode.
+2. **Enable the robot.** Use the enable/power control (⚡ button, top-left of the
+   toolbar) so the arm leaves the `Stopped` state and the drives are on. Clear any
+   active fault (⚠ icon) and make sure drag-teach is off.
+3. **Set a non-zero global speed.** The mode panel also shows the global speed
+   percentage — if it is `0 %`, the arm will not move even in Automatic mode.
+   Raise it to a sane value (e.g. 15–50 %).
+4. **Close the web interface.** The controller hands motion control to one client
+   at a time; while the web teach pendant holds control, the external SDK stream
+   from the driver is blocked. Close the browser tab, then start the driver.
+
+Then launch `fairino_hw`. If the arm was simply disabled, in manual mode, or still
+held by the web UI, error 99 clears once the above are set.
