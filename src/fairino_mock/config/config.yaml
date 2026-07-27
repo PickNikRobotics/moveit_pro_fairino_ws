@@ -1,0 +1,81 @@
+#
+# MoveIt Pro mock configuration for the Fairino FR5 robot.
+#
+
+hardware:
+  robot_description:
+    urdf:
+      package: "fairino_mock"
+      path: "description/fr5.xacro"
+    srdf:
+      package: "fairino_mock"
+      path: "config/moveit/fr5.srdf"
+
+moveit_params:
+  joint_group_name: "manipulator"
+  joint_limits:
+    package: "fairino_mock"
+    path: "config/moveit/joint_limits.yaml"
+  pose_jog:
+    package: "fairino_mock"
+    path: "config/moveit/pose_jog.yaml"
+  joint_jog:
+    package: "fairino_mock"
+    path: "config/joint_jog.yaml"
+  kinematics:
+    package: "fairino_mock"
+    path: "config/moveit/kinematics.yaml"
+  sensors_3d:
+    package: "fairino_mock"
+    path: "config/moveit/sensors_3d.yaml"
+
+  publish:
+    planning_scene: True
+    geometry_updates: True
+    state_updates: True
+    transforms_updates: True
+
+  trajectory_execution:
+    manage_controllers: True
+    allowed_execution_duration_scaling: 2.0
+    allowed_goal_duration_margin: 5.0
+    allowed_start_tolerance: 0.01
+
+objectives:
+  behavior_loader_plugins:
+    core:
+      - "moveit_pro::behaviors::CoreBehaviorsLoader"
+      - "moveit_pro::behaviors::MTCCoreBehaviorsLoader"
+      - "moveit_pro::behaviors::VisionBehaviorsLoader"
+      - "moveit_pro::behaviors::ConverterBehaviorsLoader"
+  objective_library_paths:
+    core_objectives:
+      package_name: "moveit_pro_objectives"
+      relative_path: "objectives/core"
+    motion_objectives:
+      package_name: "moveit_pro_objectives"
+      relative_path: "objectives/motion"
+    perception_objectives:
+      package_name: "moveit_pro_objectives"
+      relative_path: "objectives/perception"
+    fr5_objectives:
+      package_name: "fairino_mock"
+      relative_path: "objectives"
+
+  waypoints_file:
+    package_name: "fairino_mock"
+    relative_path: "waypoints/fr5_waypoints.yaml"
+
+ros2_control:
+  config:
+    package: "fairino_mock"
+    path: "config/control/ros2_controllers.yaml"
+  controllers_active_at_startup:
+    - "joint_state_broadcaster"
+    - "joint_trajectory_admittance_controller"
+  controllers_inactive_at_startup:
+    - "velocity_force_controller"
+    - "joint_velocity_controller"
+    - "joint_trajectory_controller"
+  controllers_not_managed: []
+  controller_shared_topics: []

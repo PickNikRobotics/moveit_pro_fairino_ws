@@ -1,0 +1,5 @@
+# Intentionally empty for the hardware config. Waypoints are omitted so that
+# Cycle Between Waypoints / Move to Waypoint cannot run on real hardware against
+# poses that may be unsafe for a given cell. Teach known-safe waypoints from the
+# UI before use. (The mock config keeps demo waypoints in fairino_mock.)
+[]

@@ -1,0 +1,13 @@
+sensors:
+  - scene_scan_camera
+scene_scan_camera:
+  sensor_plugin: "moveit_studio_plugins/PointCloudServiceOctomapUpdater"
+  point_cloud_service_name: "/point_cloud_service"
+  max_range: 1.5
+  point_subsample: 1
+  padding_scale: 1.0
+  padding_offset: 0.01
+  max_update_rate: 0.1
+
+octomap_resolution: 0.01
+octomap_frame: "base_link"
