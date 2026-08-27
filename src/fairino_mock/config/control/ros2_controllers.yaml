@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 125  # Hz - the FR5 rejects faster ServoJ rates (error 14); matches the driver's 8 ms cmdT. See README.
+    update_rate: 625  # was 125. Raised with ServoJ cmdT 0.008->0.0016 to run inside the FR5 SDK recommended servo range [0.001-0.0016]s (625-1000Hz). Fixes large-move buffer/lurch: at 125Hz/8ms cmdT the servo interpolator buffered commands (returncode 0 but no live motion) then flushed on abort. VERIFIED 2026-08-27 on IQ9: 90-126deg j1 sweeps track with peak err 0.068<0.2, 0 error-14. Requires the ServoMoveStart/End bracketing (servo-move-bracketing branch).
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
