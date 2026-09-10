@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ============================================================================
+  FR5 Scan Vicinity (sweep)   -   TEMPLATE, DO NOT RUN UNTIL POSTURES RECAPTURED
+  ============================================================================
+  Adapted from cold_spray_ws `Scan Vicinity (sweep)`.
+
+  WHAT IT DOES: steps the arm through a set of joint postures (a base-pan arc at
+  two wrist pitches), capturing a near-clipped wrist-camera point cloud into the
+  octomap at each reachable pose via /point_cloud_service. Camera-driven mapping
+  sweep. On the FR5 the arm end (tool0) is what moves; there is no nozzle.
+
+  MECHANICAL PORT DONE:
+    - joint names  J1..J6  ->  j1..j6   (FR5 uses lowercase)
+    - points topic /wrist_camera/points -> /wrist_mounted_camera/depth/color/points
+    - octomap service /point_cloud_service (unchanged; matches FR5 sensors_3d.yaml)
+    - near-clip crop min_range 0.2 kept (drops wrist/tool self-returns)
+
+  >>> SAFETY - READ BEFORE RUNNING ON THE REAL FR5 <<<
+  The joint POSTURE VALUES below are still the Fanuc CRX values. They are NOT
+  valid FR5 look-down-at-the-table viewpoints. Each pose is collision-gated
+  (PlanToJointGoal is collision-aware, ForceSuccess skips a pose that fails to
+  plan) BUT this objective AUTO-EXECUTES every plannable pose with NO approval
+  gate. A CRX value that happens to be a reachable, collision-free FR5 pose
+  would execute and could point the arm somewhere you did not intend.
+
+  THEREFORE: recapture these postures on the FR5 before running. Jog the arm
+  over the table to safe look-down poses (agent's GO cue + your jog), read
+  /joint_states, and paste the j1..j6 values into the CreateJointState blocks
+  below. Until then, treat this file as a structural template only.
+  ============================================================================
+-->
+<root BTCPP_format="4" main_tree_to_execute="FR5 Scan Vicinity (sweep)">
+  <BehaviorTree ID="FR5 Scan Vicinity (sweep)" _description="TEMPLATE - recapture postures for the FR5 before running. Systematic vicinity scan: park, near-field wrist bootstrap, then sweep the base at two wrist pitches, capturing a near-clipped wrist-camera cloud into the octomap at every reachable pose. Auto-executes (no approval gate).">
+    <Control ID="Sequence">
+      <Action ID="ClearSnapshot" />
+      <Action ID="SetBlackboard" output_key="points_topic" value="/wrist_mounted_camera/depth/color/points" />
+      <!-- park at safe posture  [CRX VALUES - RECAPTURE FOR FR5] -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="0.0;-0.97;-0.54;0.0;-0.95;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+        </Control>
+      </Decorator>
+      <!-- ===== near-field wrist bootstrap  [CRX VALUES - RECAPTURE FOR FR5] ===== -->
+      <!-- bootstrap: straight -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="0.0;-0.97;-0.54;0.0;-0.95;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+          <Action ID="GetPointCloud" topic_name="{points_topic}" publisher_timeout_sec="5.0" message_timeout_sec="5.0" message_out="{point_cloud}" />
+          <Action ID="CropPointCloudByRange" point_cloud="{point_cloud}" min_range="0.2" max_range="0.0" cropped_point_cloud="{point_cloud_clipped}" />
+          <Action ID="UpdatePlanningSceneService" point_cloud="{point_cloud_clipped}" point_cloud_service="/point_cloud_service" />
+        </Control>
+      </Decorator>
+      <!-- bootstrap: pitch up -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="0.0;-0.97;-0.54;0.0;-0.70;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+          <Action ID="GetPointCloud" topic_name="{points_topic}" publisher_timeout_sec="5.0" message_timeout_sec="5.0" message_out="{point_cloud}" />
+          <Action ID="CropPointCloudByRange" point_cloud="{point_cloud}" min_range="0.2" max_range="0.0" cropped_point_cloud="{point_cloud_clipped}" />
+          <Action ID="UpdatePlanningSceneService" point_cloud="{point_cloud_clipped}" point_cloud_service="/point_cloud_service" />
+        </Control>
+      </Decorator>
+      <!-- bootstrap: pitch down -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="0.0;-0.97;-0.54;0.0;-1.15;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+          <Action ID="GetPointCloud" topic_name="{points_topic}" publisher_timeout_sec="5.0" message_timeout_sec="5.0" message_out="{point_cloud}" />
+          <Action ID="CropPointCloudByRange" point_cloud="{point_cloud}" min_range="0.2" max_range="0.0" cropped_point_cloud="{point_cloud_clipped}" />
+          <Action ID="UpdatePlanningSceneService" point_cloud="{point_cloud_clipped}" point_cloud_service="/point_cloud_service" />
+        </Control>
+      </Decorator>
+      <!-- ===== base sweep (j1 arc x 2 wrist pitches)  [CRX VALUES - RECAPTURE FOR FR5] ===== -->
+      <!-- sweep j1=-1.6 j5=-0.70 -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="-1.6;-0.97;-0.54;0.0;-0.7;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+          <Action ID="GetPointCloud" topic_name="{points_topic}" publisher_timeout_sec="5.0" message_timeout_sec="5.0" message_out="{point_cloud}" />
+          <Action ID="CropPointCloudByRange" point_cloud="{point_cloud}" min_range="0.2" max_range="0.0" cropped_point_cloud="{point_cloud_clipped}" />
+          <Action ID="UpdatePlanningSceneService" point_cloud="{point_cloud_clipped}" point_cloud_service="/point_cloud_service" />
+        </Control>
+      </Decorator>
+      <!-- sweep j1=+0.0 j5=-0.70 -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="0.0;-0.97;-0.54;0.0;-0.7;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+          <Action ID="GetPointCloud" topic_name="{points_topic}" publisher_timeout_sec="5.0" message_timeout_sec="5.0" message_out="{point_cloud}" />
+          <Action ID="CropPointCloudByRange" point_cloud="{point_cloud}" min_range="0.2" max_range="0.0" cropped_point_cloud="{point_cloud_clipped}" />
+          <Action ID="UpdatePlanningSceneService" point_cloud="{point_cloud_clipped}" point_cloud_service="/point_cloud_service" />
+        </Control>
+      </Decorator>
+      <!-- sweep j1=+1.6 j5=-0.70 -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="1.6;-0.97;-0.54;0.0;-0.7;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+          <Action ID="GetPointCloud" topic_name="{points_topic}" publisher_timeout_sec="5.0" message_timeout_sec="5.0" message_out="{point_cloud}" />
+          <Action ID="CropPointCloudByRange" point_cloud="{point_cloud}" min_range="0.2" max_range="0.0" cropped_point_cloud="{point_cloud_clipped}" />
+          <Action ID="UpdatePlanningSceneService" point_cloud="{point_cloud_clipped}" point_cloud_service="/point_cloud_service" />
+        </Control>
+      </Decorator>
+      <!-- retreat to safe posture -->
+      <Decorator ID="ForceSuccess">
+        <Control ID="Sequence">
+          <Action ID="CreateJointState" joint_names="j1;j2;j3;j4;j5;j6" positions="0.0;-0.97;-0.54;0.0;-0.95;0.0" joint_state_msg="{vp}" />
+          <Action ID="PlanToJointGoal" joint_goal="{vp}" planning_group_name="manipulator" velocity_scale_factor="0.2" acceleration_scale_factor="0.2" keep_orientation="false" keep_orientation_tolerance="0.05" link_padding="0.01" seed="0" joint_trajectory_msg="{vt}" />
+          <Action ID="ExecuteTrajectory" joint_trajectory_msg="{vt}" controller_action_name="/manipulator_controller/follow_joint_trajectory" execution_pipeline="jtc" />
+        </Control>
+      </Decorator>
+    </Control>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="FR5 Scan Vicinity (sweep)">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="FR5 Surface Raster" />
+      </MetadataFields>
+    </SubTree>
+  </TreeNodesModel>
+</root>

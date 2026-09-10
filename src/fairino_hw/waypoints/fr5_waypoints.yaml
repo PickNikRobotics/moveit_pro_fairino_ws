@@ -1,5 +1,76 @@
-# Intentionally empty for the hardware config. Waypoints are omitted so that
-# Cycle Between Waypoints / Move to Waypoint cannot run on real hardware against
-# poses that may be unsafe for a given cell. Teach known-safe waypoints from the
-# UI before use. (The mock config keeps demo waypoints in fairino_mock.)
-[]
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - 1.5277499230412372
+    - -0.9192152171131504
+    - -1.327246516681624
+    - -2.7455028351911803
+    - 0.01511578609691031
+    - -1.5855399860637387
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Look out Window - 1
+- description: 'Close look-down over the table for the FR5 surface-raster (cold spray) objective. Operator-captured on the IQ9 2026-08-27; FR5 has limited reach so this parks the wrist camera close over the table surface.'
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.7831275522520467
+    - -2.0876453206103895
+    - -1.4644238139027337
+    - -3.9046000238062915
+    - -1.4880031758781862
+    - 0.17228047348371436
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Look Close at Table

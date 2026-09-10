@@ -1,32 +1,25 @@
 from launch import LaunchDescription
-from launch_ros.actions import Node
-from moveit_studio_utils_py.system_config import SystemConfigParser
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import AnyLaunchDescriptionSource
+from ament_index_python.packages import get_package_share_directory
+import os
 
 
 def generate_launch_description():
-    system_config_parser = SystemConfigParser()
-    hardware_config = system_config_parser.get_hardware_config()
+    """
+    Persistent drivers for the Fairino FR5 hardware config.
 
-    # Extract robot_ip from urdf_params, defaulting to 192.168.58.2
-    robot_ip = next(
-        (
-            param.get("robot_ip")
-            for param in hardware_config.robot_description.urdf_params
-            if "robot_ip" in param
-        ),
-        "192.168.58.2",
+    The Fairino arm driver itself is an in-process ros2_control system plugin
+    (loaded via the URDF), so nothing is launched for the arm here. This persist
+    launch brings up the wrist-mounted RealSense D415 camera stream so it runs
+    for the life of the MoveIt Pro session.
+    """
+    fairino_hw_share = get_package_share_directory("fairino_hw")
+
+    wrist_camera = IncludeLaunchDescription(
+        AnyLaunchDescriptionSource(
+            os.path.join(fairino_hw_share, "launch", "rs_cameras.launch.xml")
+        )
     )
 
-    return LaunchDescription(
-        [
-            Node(
-                package="fairino_hardware",
-                executable="ros2_cmd_server",
-                name="fr_command_server",
-                output="screen",
-                parameters=[
-                    {"robot_ip": robot_ip},
-                ],
-            ),
-        ]
-    )
+    return LaunchDescription([wrist_camera])

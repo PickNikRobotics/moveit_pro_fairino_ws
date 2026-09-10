@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  FR5 Surface Raster Demo  (top level)
+  ====================================
+  Adapted from cold_spray_ws `ColdSpray Demo`.
+
+  Flow:
+    1. Move the arm to a named start waypoint over the table ("Home" for now).
+    2. FR5 Create Raster Path  - pick 4 surface corners on the wrist cam, build
+       a boustrophedon raster.
+    3. FR5 Plan Cartesian Raster Path - move tool0 (the flange / arm end link)
+       over that raster at a 4 cm standoff, with user trajectory approval.
+
+  CHANGES vs cold_spray:
+    - No nozzle: tool0 is the controlled tip (handled inside the plan subtree).
+    - Start waypoint "Warped Surface" (cold_spray-specific) -> "Look Close at
+      Table" (operator-captured 2026-08-27; FR5 has limited reach, so this parks
+      the arm close over the table for a good wrist-camera view of the surface).
+    - Speed scale 0.2 on the initial Move to Waypoint (was 1.0) for cautious
+      first bring-up near the table.
+    - Camera topics default to the FR5 wrist RealSense.
+-->
+<root BTCPP_format="4" main_tree_to_execute="FR5 Surface Raster Demo">
+  <BehaviorTree ID="FR5 Surface Raster Demo" _description="Scan-and-trace a surface patch with the FR5 flange: move to a start pose, pick the surface on the wrist camera, then raster tool0 over it at a 4 cm standoff." _favorite="false">
+    <Control ID="Sequence" name="TopLevelSequence">
+      <SubTree
+        ID="Move to Waypoint"
+        _collapsed="true"
+        acceleration_scale_factor="0.2"
+        controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+        controller_names="joint_trajectory_admittance_controller"
+        joint_group_name="manipulator"
+        keep_orientation="false"
+        keep_orientation_tolerance="0.05"
+        link_padding="0.01"
+        seed="0"
+        velocity_scale_factor="0.2"
+        waypoint_name="Look at Table"
+        execution_pipeline="jtac"
+      />
+      <SubTree
+        ID="FR5 Create Raster Path"
+        _collapsed="true"
+        overage_distance="0.03"
+        boustrophedon_path="{raster_path}"
+        number_of_obstacles="0"
+        stride_spacing="0.02"
+        obs_avoidance_radius="0.015"
+        pointcloud_topic="/camera/wrist_mounted_camera/depth/color/points"
+        view_topic="/camera/wrist_mounted_camera/color/image_raw"
+      />
+      <SubTree
+        ID="FR5 Plan Cartesian Raster Path"
+        _collapsed="false"
+        pose_vector="{raster_path}"
+      />
+    </Control>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="FR5 Surface Raster Demo">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="FR5 Surface Raster" />
+      </MetadataFields>
+    </SubTree>
+  </TreeNodesModel>
+</root>

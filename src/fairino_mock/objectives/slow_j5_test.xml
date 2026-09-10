@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root BTCPP_format="4" main_tree_to_execute="Slow J5 Test">
+  <BehaviorTree
+    ID="Slow J5 Test"
+    _description="Agent test: single slow j5 move (~5.7 deg) at velocity_scale 0.02 to check whether low speed avoids the FR ServoJ mid-move rejection. Uses the proven Move to Waypoint / admittance path."
+    _favorite="false"
+  >
+    <Control ID="Sequence">
+      <SubTree
+        ID="Move to Waypoint"
+        _collapsed="true"
+        waypoint_name="Slow Test J5"
+        joint_group_name="manipulator"
+        acceleration_scale_factor="0.02"
+        controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+        controller_names="joint_trajectory_admittance_controller"
+        execution_pipeline="jtac"
+        keep_orientation="false"
+        keep_orientation_tolerance="0.05"
+        link_padding="0.01"
+        seed="0"
+        velocity_scale_factor="0.02"
+      />
+    </Control>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="Slow J5 Test">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="Agent Tests" />
+      </MetadataFields>
+    </SubTree>
+  </TreeNodesModel>
+</root>

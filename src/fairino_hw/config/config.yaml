@@ -13,12 +13,12 @@ hardware:
       path: "description/fr5.xacro"
     urdf_params:
       - robot_ip: "192.168.58.2"
-  # robot_driver_persist_launch_file:
-  #   package: "fairino_hw"
-  #   path: "launch/robot_drivers.launch.py"
+  # Persist launch starts the wrist-mounted RealSense D415 camera stream.
+  # (The Fairino arm driver is an in-process ros2_control plugin, so only the
+  # camera needs a launched node here.)
   robot_driver_persist_launch_file:
-    package: "moveit_studio_agent"
-    path: "launch/blank.launch.py"
+    package: "fairino_hw"
+    path: "launch/robot_drivers.launch.py"
 
 # The objectives section is overridden as a whole (it is not deep-merged with
 # the based_on_package parent), so it is re-declared here mirroring fairino_mock,

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Two RealSense D415s for the Fairino FR5:
+    - wrist_mounted_camera: calibrated, in-kinematic-chain, full depth+color+pointcloud
+      (feeds perception/octomap). USB3 port 4-1.
+    - observer_camera: color-only operator situational-awareness view for remote
+      teleop, NOT perception. USB3 port 4-2. Added 2026-08-24 once it was on a
+      healthy USB3 link.
+  Both pinned by librealsense serial. Uses the pro_rs_launch.py wrapper (which
+  extends the stock realsense2_camera rs_launch with SENSOR_DATA QoS).
+
+  NOTE (arm64 only): on the IQ9/Dragonwing, realsense2_camera registers pointcloud
+  params under `pointcloud__neon_.*` instead of `pointcloud.*` — the pointcloud args
+  below would silently no-op there and need the __neon_ spelling. On this x86 box the
+  plain spelling is correct.
+-->
+<launch>
+  <!-- Serial of the wrist (on-arm) D415 = USB3 port 4-1 (5000M).
+       IMPORTANT D415 gotcha: the node prints the USB-DESCRIPTOR serial
+       (948123022230) during discovery, but librealsense's MATCH key for that
+       physical camera is 950122060639 — that is the value to request here.
+       Requesting the USB-descriptor serial (948123022230) fails
+       ("NOT found. Will Try again.").
+       Verified live 2026-08-24 with the observer unplugged: exactly one D415 on
+       the bus, port 4-1 = USB3/5000M, rs-enumerate serial 950122060639 = the wrist.
+       (The observer/scene camera was serial 851112061502, on USB2 port 3-5 — that
+       wrong value was previously set here, so the driver opened the observer on
+       USB2 and failed with "Depth stream start failure / Frames didn't arrive".) -->
+  <arg name="wrist_mounted_camera_serial_no" default="'950122060639'" />
+
+  <!-- Observer camera: a SECOND D415 providing an operator situational-awareness
+       view for remote teleop. NOT in the kinematic chain and NOT a perception
+       sensor — color-only (depth/infra/pointcloud disabled), so it never feeds the
+       octomap (wrist_mounted_camera stays the sole perception/octomap camera).
+       librealsense MATCH serial = 851112061502 (sysfs/USB-descriptor serial reads
+       844513020419 — the usual D415 two-serial quirk; always match the librealsense
+       one). Verified live 2026-08-24 on USB3 port 4-2 (usb4, 5000M).
+       Named "observer_camera" (NOT "scene camera", which collides with Pro's
+       scene_scan_camera perception concept). Its TF pose is COSMETIC/uncalibrated
+       (see static_transform_publisher below); calibrate only if ever promoted to
+       perception. -->
+  <arg name="observer_camera_serial_no" default="'851112061502'" />
+
+  <include file="$(find-pkg-share fairino_hw)/launch/pro_rs_launch.py">
+    <arg name="camera_name" value="wrist_mounted_camera" />
+    <arg name="serial_no" value="$(var wrist_mounted_camera_serial_no)" />
+    <arg name="device_type" value="D415" />
+    <arg name="depth_module.profile" value="640x480x6" />
+    <arg name="rgb_camera.profile" value="640x480x6" />
+    <arg name="pointcloud.enable" value="True" />
+    <arg name="pointcloud.ordered_pc" value="True" />
+    <arg name="decimation_filter.enable" value="False" />
+
+    <!-- Raw image + info topics -->
+    <arg name="rgb_info" value="/wrist_mounted_camera/color/camera_info" />
+    <arg name="rgb_image" value="/wrist_mounted_camera/color/image_raw" />
+
+    <!-- Registered depth/color pair, enables "Set Transform From Click" in the UI -->
+    <arg name="registered_rgb_depth_pair.depth_info"
+         value="/wrist_mounted_camera/depth/camera_info" />
+    <arg name="registered_rgb_depth_pair.depth_image"
+         value="/wrist_mounted_camera/depth/image_rect_raw" />
+    <arg name="registered_rgb_depth_pair.registered_info"
+         value="/wrist_mounted_camera/depth_registered/camera_info" />
+    <arg name="registered_rgb_depth_pair.registered_image"
+         value="/wrist_mounted_camera/depth_registered/image_rect" />
+  </include>
+
+  <!-- Observer camera: COLOR-ONLY operator view. depth/infra/pointcloud disabled
+       so it adds no perception load and never touches the octomap. -->
+  <include file="$(find-pkg-share fairino_hw)/launch/pro_rs_launch.py">
+    <arg name="camera_name" value="observer_camera" />
+    <arg name="serial_no" value="$(var observer_camera_serial_no)" />
+    <arg name="device_type" value="D415" />
+    <arg name="enable_color" value="True" />
+    <arg name="rgb_camera.color_profile" value="640x480x30" />
+    <arg name="enable_depth" value="False" />
+    <arg name="enable_infra1" value="False" />
+    <arg name="enable_infra2" value="False" />
+    <arg name="pointcloud.enable" value="False" />
+
+    <!-- Color image + info topics -->
+    <arg name="rgb_info" value="/observer_camera/color/camera_info" />
+    <arg name="rgb_image" value="/observer_camera/color/image_raw" />
+  </include>
+
+  <!-- Cosmetic/uncalibrated static TF so the observer color frame has a place in
+       the tree (base_link -> observer_camera_link). Pose is a rough guess for a
+       tripod/fixed mount; adjust xyz/rpy to taste. Do NOT treat as calibrated. -->
+  <node pkg="tf2_ros" exec="static_transform_publisher" name="observer_camera_static_tf"
+        args="--x 0.5 --y 0.5 --z 0.6 --roll 0 --pitch 0.4 --yaw -2.4
+              --frame-id base_link --child-frame-id observer_camera_link" />
+</launch>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root BTCPP_format="4" main_tree_to_execute="Endurance Slow J5J6 Loop">
+  <BehaviorTree
+    ID="Endurance Slow J5J6 Loop"
+    _description="Isolation test D (DURATION/ACCUMULATION): loop a KNOWN-CLEAN coordinated j5+j6 ~80deg sweep at velocity_scale 0.02 (the speed Tests A and C passed at) repeatedly until failure. Tests whether error accumulates over a long run independent of per-move speed. If this eventually trips at 0.02, the long-run failures are time/accumulation-driven, not per-move speed. If it loops indefinitely clean, duration is not a factor at 0.02 and we can bracket speed."
+    _favorite="false"
+  >
+    <Decorator ID="KeepRunningUntilFailure">
+      <Control ID="Sequence">
+        <SubTree
+          ID="Move to Waypoint"
+          _collapsed="true"
+          waypoint_name="Large Slow J5"
+          joint_group_name="manipulator"
+          acceleration_scale_factor="0.02"
+          controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+          controller_names="joint_trajectory_admittance_controller"
+          execution_pipeline="jtac"
+          keep_orientation="false"
+          keep_orientation_tolerance="0.05"
+          link_padding="0.01"
+          seed="0"
+          velocity_scale_factor="0.02"
+        />
+        <SubTree
+          ID="Move to Waypoint"
+          _collapsed="true"
+          waypoint_name="MultiJoint Slow J5J6"
+          joint_group_name="manipulator"
+          acceleration_scale_factor="0.02"
+          controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+          controller_names="joint_trajectory_admittance_controller"
+          execution_pipeline="jtac"
+          keep_orientation="false"
+          keep_orientation_tolerance="0.05"
+          link_padding="0.01"
+          seed="0"
+          velocity_scale_factor="0.02"
+        />
+      </Control>
+    </Decorator>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="Endurance Slow J5J6 Loop">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="Agent Tests" />
+      </MetadataFields>
+    </SubTree>
+  </TreeNodesModel>
+</root>

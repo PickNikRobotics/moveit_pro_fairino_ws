@@ -37,4 +37,18 @@
   <disable_collisions link1="wrist1_link" link2="wrist2_link" reason="Adjacent" />
   <disable_collisions link1="wrist1_link" link2="wrist3_link" reason="Never" />
   <disable_collisions link1="wrist2_link" link2="wrist3_link" reason="Adjacent" />
+
+  <!-- Wrist-mounted RealSense D415 + PickNik camera adapter bracket (parented to
+       tool0 on wrist3_link). These are the only two camera-side links with collision
+       geometry (realsense_camera_adapter_link = bracket, wrist_mounted_camera_link =
+       D415 body). Pattern mirrors the shipped core_integration_config/picknik_ur.srdf
+       (gripper links omitted — this FR5 has no end-effector). Without these, the
+       planner flags the rigidly-attached camera/bracket as colliding with the wrist. -->
+  <disable_collisions link1="realsense_camera_adapter_link" link2="wrist_mounted_camera_link" reason="Adjacent" />
+  <disable_collisions link1="realsense_camera_adapter_link" link2="wrist1_link" reason="Never" />
+  <disable_collisions link1="realsense_camera_adapter_link" link2="wrist2_link" reason="Never" />
+  <disable_collisions link1="realsense_camera_adapter_link" link2="wrist3_link" reason="Adjacent" />
+  <disable_collisions link1="wrist_mounted_camera_link" link2="wrist1_link" reason="Never" />
+  <disable_collisions link1="wrist_mounted_camera_link" link2="wrist2_link" reason="Never" />
+  <disable_collisions link1="wrist_mounted_camera_link" link2="wrist3_link" reason="Never" />
 </robot>

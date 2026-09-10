@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  FR5 Create Raster Path
+  ======================
+  Adapted from cold_spray_ws `Cold Spray Create Raster Path`.
+
+  Perception is unchanged in spirit: click 4 corners on the wrist-camera color
+  view, build a boustrophedon (back-and-forth) raster over that surface patch.
+  The resulting {boustrophedon_path} is consumed by "FR5 Plan Cartesian Raster
+  Path", which moves tool0 (the flange) over it at a 4 cm standoff.
+
+  CHANGES vs cold_spray:
+    - Camera topics point at the FR5 wrist RealSense:
+        points : /camera/wrist_mounted_camera/depth/color/points
+        view   : /camera/wrist_mounted_camera/color/image_raw
+      (VERIFY against `ros2 topic list` once the wrist cam is back up — the
+       RealSense pointcloud topic is /<cam>/depth/color/points by convention.)
+    - Transform target frame world -> base_link (canonical here; octomap_frame
+      is base_link. `world` also exists in this URDF as an alias, but base_link
+      is used for consistency).
+    - Obstacle-picking view topic (was hardcoded /wrist_camera/color) now uses
+      the {view_topic} port so it can never drift from the main view.
+-->
+<root BTCPP_format="4" main_tree_to_execute="FR5 Create Raster Path">
+  <BehaviorTree
+    ID="FR5 Create Raster Path"
+    _description="Pick 4 surface corners on the wrist-camera view and build a boustrophedon raster over that patch, for the FR5 flange (tool0) to trace at a standoff."
+    _favorite="false"
+  >
+    <Control ID="Sequence" name="TopLevelSequence">
+      <!--Gather points, get point cloud, transform points to base_link frame-->
+      <Action ID="ClearSnapshot" />
+      <Action ID="ResetPoseStampedVector" vector="{path_poses}" />
+      <Action ID="Script" code="flag := 1" />
+      <Control ID="Sequence">
+        <Action
+          ID="GetPointCloud"
+          message_out="{point_cloud}"
+          publisher_timeout_sec="5.000000"
+          topic_name="{pointcloud_topic}"
+        />
+        <!-- Show the FULL captured cloud in the UI immediately, so the operator
+             can eyeball the surface (and later judge the raster standoff against
+             it) BEFORE approving any trajectory. Uses the raw cloud in its
+             native camera frame; the trimmed cloud is still sent later. -->
+        <Action
+          ID="SendPointCloudToUI"
+          pcd_topic="/pcd_pointcloud_captures"
+          point_cloud="{point_cloud}"
+        />
+        <Action
+          ID="GetPointsFromUser"
+          pixel_coords="{pixel_coords}"
+          point_names="one;two;three;four"
+          point_prompts="one;two;three;four"
+          view_name="{view_topic}"
+        />
+        <Action
+          ID="GetPoseFromPixelCoords"
+          downsample_fraction="0.100000"
+          neighbor_radius="0.100000"
+          output_poses="{output_poses}"
+          pixel_coords="{pixel_coords}"
+          point_cloud="{point_cloud}"
+        />
+        <Action
+          ID="TransformPointCloudFrame"
+          input_cloud="{point_cloud}"
+          output_cloud="{point_cloud}"
+          target_frame="base_link"
+        />
+        <Action ID="ResetPoseStampedVector" vector="{pixel_pose_vector}" />
+        <Decorator
+          ID="ForEach"
+          index="{index}"
+          out="{pose}"
+          vector_in="{output_poses}"
+        >
+          <Control ID="Sequence">
+            <Action
+              ID="TransformPoseFrame"
+              input_pose="{pose}"
+              output_pose="{transformed_pose}"
+              target_frame_id="base_link"
+            />
+            <Action
+              ID="AddPoseStampedToVector"
+              input="{transformed_pose}"
+              vector="{pixel_pose_vector}"
+            />
+          </Control>
+        </Decorator>
+      </Control>
+      <Control ID="Sequence">
+        <Action
+          ID="TrimPointcloudSurface"
+          point_cloud="{point_cloud}"
+          waypoints="{pixel_pose_vector}"
+          trimmed_point_cloud="{trimmed_point_cloud}"
+        />
+        <Action
+          ID="SendPointCloudToUI"
+          pcd_topic="/pcd_pointcloud_captures"
+          point_cloud="{trimmed_point_cloud}"
+        />
+        <Action
+          ID="FindSlicePlanesAlongEdge"
+          edge_number="1"
+          shift_distance="0.0;0.3;0"
+          waypoints="{pixel_pose_vector}"
+          stride_spacing="{stride_spacing}"
+          output_waypoints="{edge_waypoints}"
+        />
+      </Control>
+      <Action ID="ResetPoseStampedVector" vector="{obstacle_pose_vector}" />
+      <Decorator ID="Repeat" num_cycles="{number_of_obstacles}">
+        <Control ID="Sequence">
+          <Action
+            ID="BreakpointSubscriber"
+            breakpoint_topic="/moveit_pro_breakpoint"
+          />
+          <Action
+            ID="GetPointsFromUser"
+            pixel_coords="{pixel_coords_obstacles}"
+            view_name="{view_topic}"
+            point_names="obstacle"
+            point_prompts="obstacle"
+          />
+          <Action
+            ID="GetPoseFromPixelCoords"
+            downsample_fraction="0.100000"
+            neighbor_radius="0.100000"
+            output_poses="{obstacle_poses}"
+            pixel_coords="{pixel_coords_obstacles}"
+            point_cloud="{point_cloud}"
+          />
+          <Decorator
+            ID="ForEach"
+            index="{index}"
+            out="{obstacle_pose}"
+            vector_in="{obstacle_poses}"
+          >
+            <Control ID="Sequence">
+              <Action
+                ID="TransformPoseFrame"
+                input_pose="{obstacle_pose}"
+                output_pose="{transformed_obstacle_pose}"
+                target_frame_id="base_link"
+              />
+              <Action
+                ID="AddPoseStampedToVector"
+                input="{transformed_obstacle_pose}"
+                vector="{obstacle_pose_vector}"
+              />
+            </Control>
+          </Decorator>
+        </Control>
+      </Decorator>
+      <Decorator
+        ID="ForEach"
+        index="{index}"
+        out="{edge_point}"
+        vector_in="{edge_waypoints}"
+      >
+        <Control ID="Sequence">
+          <Action ID="ResetPoseStampedVector" vector="{contour_path}" />
+          <Control ID="IfThenElse">
+            <Control ID="Sequence">
+              <Action
+                ID="GetContourFromPointCloudSlice"
+                contour_crop_angle_span="-3.0"
+                contour_crop_angle_start="0.000000"
+                contour_path="{contour_path}"
+                max_pose_spacing="0.0300000"
+                input_cloud="{trimmed_point_cloud}"
+                slice_distance_from_plane="0.00500000"
+                slice_plane="{edge_point}"
+                hull_alpha="0.01"
+              />
+              <Action
+                ID="AddOverageToPath"
+                num_waypoints="3"
+                overage_distance="{overage_distance}"
+                waypoints="{contour_path}"
+                output_waypoints="{contour_path_with_overage}"
+                axis="y"
+              />
+              <Control ID="Fallback">
+                <Decorator ID="Precondition" else="FAILURE" if="flag == 1">
+                  <Action ID="AlwaysSuccess" />
+                </Decorator>
+                <Action
+                  ID="ReversePoseStampedVector"
+                  input_vector="{contour_path_with_overage}"
+                  output_vector="{contour_path_with_overage}"
+                />
+              </Control>
+              <Action
+                ID="AvoidPointsInCoveragePath"
+                avoidance_radius="{obs_avoidance_radius}"
+                stride_spacing="{stride_spacing}"
+                loop_segments="8"
+                coverage_path="{contour_path_with_overage}"
+                modified_path="{contour_path_with_overage_with_obs}"
+                points_to_avoid="{obstacle_pose_vector}"
+              />
+              <Decorator
+                ID="ForEach"
+                index="{index_contour}"
+                out="{contour_pose}"
+                vector_in="{contour_path_with_overage_with_obs}"
+              >
+                <Control ID="Sequence">
+                  <Action
+                    ID="AddPoseStampedToVector"
+                    input="{contour_pose}"
+                    vector="{boustrophedon_path}"
+                  />
+                </Control>
+              </Decorator>
+              <Action
+                ID="VisualizePath"
+                marker_lifetime="0.000000"
+                marker_name="final_path"
+                path="{boustrophedon_path}"
+                pose_marker_size="0.0200000"
+                show_poses="true"
+              />
+            </Control>
+            <Action ID="Script" code="flag := flag * -1" />
+            <Action ID="Script" code="flag := flag * 1" />
+          </Control>
+        </Control>
+      </Decorator>
+    </Control>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="FR5 Create Raster Path">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="FR5 Surface Raster" />
+      </MetadataFields>
+      <inout_port
+        name="obs_avoidance_radius"
+        default="{obs_avoidance_radius}"
+      />
+      <inout_port name="boustrophedon_path" default="{boustrophedon_path}" />
+      <inout_port name="stride_spacing" default="{stride_spacing}" />
+      <inout_port name="number_of_obstacles" default="{number_of_obstacles}" />
+      <inout_port name="overage_distance" default="{overage_distance}" />
+      <inout_port name="pointcloud_topic" default="/camera/wrist_mounted_camera/depth/color/points" />
+      <inout_port name="view_topic" default="/camera/wrist_mounted_camera/color/image_raw">
+        The camera image topic to select points from.
+      </inout_port>
+    </SubTree>
+  </TreeNodesModel>
+</root>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root BTCPP_format="4" main_tree_to_execute="Endurance SixJoint Loop">
+  <BehaviorTree
+    ID="Endurance SixJoint Loop"
+    _description="Isolation test F (ALL-SIX-JOINT COORDINATION): loop between two waypoints that differ on EVERY joint, at velocity_scale 0.3 / accel_scale 0.3 (proven clean on the 2-joint sweep). This is the one structural variable the real Cycle/raster objectives have that our clean tests did not: many joints changing simultaneously per ServoJ cycle. If this trips where the 2-joint loop at higher speed did not, the trigger is simultaneous multi-joint coordination (combined per-cycle setpoint change the FR rejects), not per-joint speed, excursion, duration, or CPU load."
+    _favorite="false"
+  >
+    <Decorator ID="KeepRunningUntilFailure">
+      <Control ID="Sequence">
+        <SubTree
+          ID="Move to Waypoint"
+          _collapsed="true"
+          waypoint_name="SixJoint Pose A"
+          joint_group_name="manipulator"
+          acceleration_scale_factor="0.3"
+          controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+          controller_names="joint_trajectory_admittance_controller"
+          execution_pipeline="jtac"
+          keep_orientation="false"
+          keep_orientation_tolerance="0.05"
+          link_padding="0.01"
+          seed="0"
+          velocity_scale_factor="0.3"
+        />
+        <SubTree
+          ID="Move to Waypoint"
+          _collapsed="true"
+          waypoint_name="SixJoint Pose B"
+          joint_group_name="manipulator"
+          acceleration_scale_factor="0.3"
+          controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+          controller_names="joint_trajectory_admittance_controller"
+          execution_pipeline="jtac"
+          keep_orientation="false"
+          keep_orientation_tolerance="0.05"
+          link_padding="0.01"
+          seed="0"
+          velocity_scale_factor="0.3"
+        />
+      </Control>
+    </Decorator>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="Endurance SixJoint Loop">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="Agent Tests" />
+      </MetadataFields>
+    </SubTree>
+  </TreeNodesModel>
+</root>

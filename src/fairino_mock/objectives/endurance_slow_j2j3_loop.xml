@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root BTCPP_format="4" main_tree_to_execute="Endurance Slow J2J3 Loop">
+  <BehaviorTree
+    ID="Endurance Slow J2J3 Loop"
+    _description="Isolation test E (SHOULDER/ELBOW): loop a coordinated j2+j3 (shoulder+elbow) ~40deg sweep at velocity_scale 0.02 (the speed the WRIST endured 19h clean). j2/j3 carry far more inertia than the wrist, so if the ceiling is load/inertia-dependent this should trip where the wrist did not. If it also runs clean, the ceiling is not joint-specific at 0.02."
+    _favorite="false"
+  >
+    <Decorator ID="KeepRunningUntilFailure">
+      <Control ID="Sequence">
+        <SubTree
+          ID="Move to Waypoint"
+          _collapsed="true"
+          waypoint_name="J2J3 Pose A"
+          joint_group_name="manipulator"
+          acceleration_scale_factor="0.02"
+          controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+          controller_names="joint_trajectory_admittance_controller"
+          execution_pipeline="jtac"
+          keep_orientation="false"
+          keep_orientation_tolerance="0.05"
+          link_padding="0.01"
+          seed="0"
+          velocity_scale_factor="0.02"
+        />
+        <SubTree
+          ID="Move to Waypoint"
+          _collapsed="true"
+          waypoint_name="J2J3 Pose B"
+          joint_group_name="manipulator"
+          acceleration_scale_factor="0.02"
+          controller_action_server="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+          controller_names="joint_trajectory_admittance_controller"
+          execution_pipeline="jtac"
+          keep_orientation="false"
+          keep_orientation_tolerance="0.05"
+          link_padding="0.01"
+          seed="0"
+          velocity_scale_factor="0.02"
+        />
+      </Control>
+    </Decorator>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="Endurance Slow J2J3 Loop">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="Agent Tests" />
+      </MetadataFields>
+    </SubTree>
+  </TreeNodesModel>
+</root>

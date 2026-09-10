@@ -14,6 +14,9 @@
   <exec_depend>fairino_description</exec_depend>
   <exec_depend>fairino_hardware</exec_depend>
   <exec_depend>fairino_msgs</exec_depend>
+  <exec_depend>picknik_accessories</exec_depend>
+  <exec_depend>realsense2_description</exec_depend>
+  <exec_depend>realsense2_camera</exec_depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

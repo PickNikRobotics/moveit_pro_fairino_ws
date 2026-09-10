@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  FR5 Plan Cartesian Raster Path
+  =================================
+  Adapted from cold_spray_ws `Plan Cartesian Raster Path`.
+
+  KEY CHANGE vs cold_spray: the controlled tip is the ARM'S OWN END LINK
+  (`tool0`, the flange center) instead of the cold-spray nozzle frame
+  (`cold_spray_tool_tip`), and the standoff is 4 cm instead of 1 inch.
+
+    tip_links   : cold_spray_tool_tip  ->  tool0
+    tip_offset  : 0;0;-0.0254;...       ->  0;0;-0.04;...   (4 cm along -Z of tool0)
+
+  tool0 +Z points OUT along the tool axis (away from the wrist). The offset
+  point 0.04 m in tool0's -Z is placed on the clicked surface, so the flange
+  face rides ~4 cm above the surface, sign convention mirrored from the proven
+  cold_spray setup. VERIFY-ON-FIRST-RUN: if the flange dives toward/into the
+  surface instead of standing off, flip the sign to +0.04.
+
+  SPEED: velocity/acceleration scale set to 0.2 (was 1.0) for cautious first
+  bring-up on the real arm. Raster is a dense Cartesian path; on the CRX full
+  speed wedged the RMI layer. The FR5 has the ServoMove latency fix, but 0.2 is
+  the safe starting point near a table — raise deliberately once proven.
+
+  Four roll variants (0, 1.57, 3.14, 4.71 about the tool axis) are kept: roll
+  about the flange axis is a free DOF, so the planner takes whichever roll is
+  kinematically reachable.
+-->
+<root BTCPP_format="4" main_tree_to_execute="FR5 Plan Cartesian Raster Path">
+  <BehaviorTree
+    ID="FR5 Plan Cartesian Raster Path"
+    _description="Given a vector of pose-stamped waypoints on a surface, plan and execute a Cartesian raster that moves the FR5 flange (tool0) at a 4 cm standoff. Adapted from cold_spray to control the arm end link directly, no nozzle."
+    _favorite="false"
+  >
+    <Control ID="Sequence" name="TopLevelSequence">
+      <Action
+        ID="InitializeMTCTask"
+        task="{mtc_task}"
+        timeout="-1.000000"
+        trajectory_monitoring="false"
+        controller_names="joint_trajectory_admittance_controller"
+      />
+      <Action ID="SetupMTCCurrentState" task="{mtc_task}" />
+      <Action
+        ID="GetCurrentPlanningScene"
+        planning_scene_msg="{planning_scene}"
+      />
+      <Control ID="Fallback">
+        <Control ID="Parallel" failure_count="4" success_count="1">
+          <Control ID="Sequence">
+            <Action
+              ID="PlanCartesianPath"
+              acceleration_scale_factor="0.200000"
+              blending_radius="0.000010000"
+              ik_cartesian_space_density="0.01"
+              ik_joint_space_density="0.1"
+              joint_trajectory_msg="{joint_trajectory_msg1}"
+              path="{pose_vector}"
+              planning_group_name="manipulator"
+              position_only="false"
+              trajectory_sampling_rate="100"
+              velocity_scale_factor="0.200000"
+              debug_solution="{mtc_solution1}"
+              tip_offset="0;0;0.10;3.14159;0;0"
+              tip_links="tool0"
+              max_optimizer_iterations="100"
+            />
+            <Action
+              ID="ValidateTrajectory"
+              cartesian_space_step="0.020000"
+              debug_solution="{mtc_solution1}"
+              joint_space_step="0.100000"
+              joint_trajectory_msg="{joint_trajectory_msg1}"
+              planning_group_name="manipulator"
+              planning_scene_msg="{planning_scene}"
+            />
+            <Action
+              ID="Script"
+              code="joint_trajectory_msg := joint_trajectory_msg1"
+            />
+            <Action ID="Script" code="mtc_solution := mtc_solution1" />
+          </Control>
+          <Control ID="Sequence">
+            <Action
+              ID="PlanCartesianPath"
+              acceleration_scale_factor="0.200000"
+              blending_radius="0.000010000"
+              ik_cartesian_space_density="0.01"
+              ik_joint_space_density="0.1"
+              joint_trajectory_msg="{joint_trajectory_msg2}"
+              path="{pose_vector}"
+              planning_group_name="manipulator"
+              position_only="false"
+              trajectory_sampling_rate="100"
+              velocity_scale_factor="0.200000"
+              debug_solution="{mtc_solution2}"
+              tip_offset="0;0;0.10;3.14159;0;1.57"
+              tip_links="tool0"
+              max_optimizer_iterations="100"
+            />
+            <Action
+              ID="ValidateTrajectory"
+              cartesian_space_step="0.020000"
+              debug_solution="{mtc_solution2}"
+              joint_space_step="0.100000"
+              joint_trajectory_msg="{joint_trajectory_msg2}"
+              planning_group_name="manipulator"
+              planning_scene_msg="{planning_scene}"
+            />
+            <Action
+              ID="Script"
+              code="joint_trajectory_msg := joint_trajectory_msg2"
+            />
+            <Action ID="Script" code="mtc_solution := mtc_solution2" />
+          </Control>
+          <Control ID="Sequence">
+            <Action
+              ID="PlanCartesianPath"
+              acceleration_scale_factor="0.200000"
+              blending_radius="0.000010000"
+              ik_cartesian_space_density="0.01"
+              ik_joint_space_density="0.1"
+              joint_trajectory_msg="{joint_trajectory_msg3}"
+              path="{pose_vector}"
+              planning_group_name="manipulator"
+              position_only="false"
+              trajectory_sampling_rate="100"
+              velocity_scale_factor="0.200000"
+              debug_solution="{mtc_solution3}"
+              tip_offset="0;0;0.10;3.14159;0;3.14"
+              tip_links="tool0"
+              max_optimizer_iterations="100"
+            />
+            <Action
+              ID="ValidateTrajectory"
+              cartesian_space_step="0.020000"
+              debug_solution="{mtc_solution3}"
+              joint_space_step="0.100000"
+              joint_trajectory_msg="{joint_trajectory_msg3}"
+              planning_group_name="manipulator"
+              planning_scene_msg="{planning_scene}"
+            />
+            <Action
+              ID="Script"
+              code="joint_trajectory_msg := joint_trajectory_msg3"
+            />
+            <Action ID="Script" code="mtc_solution := mtc_solution3" />
+          </Control>
+          <Control ID="Sequence">
+            <Action
+              ID="PlanCartesianPath"
+              acceleration_scale_factor="0.200000"
+              blending_radius="0.000010000"
+              ik_cartesian_space_density="0.01"
+              ik_joint_space_density="0.1"
+              joint_trajectory_msg="{joint_trajectory_msg4}"
+              path="{pose_vector}"
+              planning_group_name="manipulator"
+              position_only="false"
+              trajectory_sampling_rate="100"
+              velocity_scale_factor="0.200000"
+              debug_solution="{mtc_solution4}"
+              tip_offset="0;0;0.10;3.14159;0;4.71"
+              tip_links="tool0"
+              max_optimizer_iterations="100"
+            />
+            <Action
+              ID="ValidateTrajectory"
+              cartesian_space_step="0.020000"
+              debug_solution="{mtc_solution4}"
+              joint_space_step="0.100000"
+              joint_trajectory_msg="{joint_trajectory_msg4}"
+              planning_group_name="manipulator"
+              planning_scene_msg="{planning_scene}"
+            />
+            <Action
+              ID="Script"
+              code="joint_trajectory_msg := joint_trajectory_msg4"
+            />
+            <Action ID="Script" code="mtc_solution := mtc_solution4" />
+          </Control>
+        </Control>
+        <Control ID="Sequence">
+          <Action
+            ID="LogMessage"
+            log_level="error"
+            message="Validate trajectory failed"
+          />
+          <Action ID="AlwaysFailure" />
+        </Control>
+      </Control>
+      <Action
+        ID="WaitForUserTrajectoryApproval"
+        cartesian_path_links="tool0"
+        solution="{mtc_solution}"
+      />
+      <Action
+        ID="SwitchController"
+        activate_asap="true"
+        automatic_deactivation="true"
+        controller_list_action_name="/controller_manager/list_controllers"
+        controller_switch_action_name="/controller_manager/switch_controller"
+        strictness="1"
+        timeout="-1.000000"
+        activate_controllers="joint_trajectory_admittance_controller"
+      />
+      <Action
+        ID="ExecuteTrajectory"
+        joint_trajectory_msg="{joint_trajectory_msg}"
+        controller_action_name="/joint_trajectory_admittance_controller/follow_joint_trajectory"
+        execution_pipeline="jtac"
+        path_position_tolerance="0.2"
+        goal_position_tolerance="0.001000"
+        goal_duration_tolerance="-1.000000"
+        absolute_force_torque_threshold="45;45;45;10;10;10"
+      />
+    </Control>
+  </BehaviorTree>
+  <TreeNodesModel>
+    <SubTree ID="FR5 Plan Cartesian Raster Path">
+      <MetadataFields>
+        <Metadata runnable="true" />
+        <Metadata subcategory="FR5 Surface Raster" />
+      </MetadataFields>
+      <inout_port name="pose_vector" default="{pose_vector}" />
+    </SubTree>
+  </TreeNodesModel>
+</root>
