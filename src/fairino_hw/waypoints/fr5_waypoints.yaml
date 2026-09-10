@@ -1,5 +1,424 @@
-# Intentionally empty for the hardware config. Waypoints are omitted so that
-# Cycle Between Waypoints / Move to Waypoint cannot run on real hardware against
-# poses that may be unsafe for a given cell. Teach known-safe waypoints from the
-# UI before use. (The mock config keeps demo waypoints in fairino_mock.)
-[]
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.7831275522520467
+    - -2.0876453206103895
+    - -1.4644238139027337
+    - -3.9046000238062915
+    - -1.4880031758781862
+    - 0.17228047348371436
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Look Close at Table
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.7389421145001606
+    - -1.10704430694994
+    - -0.8200721878951438
+    - -2.9171188000486494
+    - 0.03154912537005608
+    - -1.0396820440213668
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Look at Curtain
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.19614830573949296
+    - -1.4288196138153009
+    - -1.2130598896770053
+    - -2.312476037737604
+    - 0.029103869113794173
+    - -1.391100331190127
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Look at Rail Robot
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.4542215982784853
+    - -1.7274750205722749
+    - -0.734097158687034
+    - -2.087679542230397
+    - 1.3783387295625764
+    - -2.8036763934106532
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Look at Table
+- description: ''
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -1.050898346426399
+    - -1.5334149993120538
+    - -1.5140162676158078
+    - -2.92198279746357
+    - -2.3148414574178124
+    - 0.6037391517531814
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ''
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: New Home
+- description: "Slow single-joint test: current pose with j5 +0.10 rad (~5.7deg). Agent-created for velocity-vs-rejection test."
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.7591192216040097
+    - -1.2474756541279903
+    - -1.0347535981080662
+    - -2.8541725908396454
+    - -0.4536987210552423
+    - -0.6672436926847203
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Slow Test J5
+- description: "Isolation test A: LARGE j5 move (+1.4 rad ~80deg) from current pose, run at velocity_scale 0.02. Tests excursion-vs-velocity."
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.9268
+    - -1.5736
+    - -1.3520
+    - -2.7486
+    - -0.1475
+    - -0.1042
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: Large Slow J5
+- description: "Isolation test C: j5 AND j6 together, both ~80deg, at velocity_scale 0.02. Tests multi-joint interaction vs single-joint (Test A was single-joint clean)."
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.9268
+    - -1.5736
+    - -1.3520
+    - -2.7486
+    - -1.5475
+    - 1.2958
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: MultiJoint Slow J5J6
+- description: "Elbow/shoulder test pose A (current): j2=-1.5736 j3=-1.3520. Pairs with J2J3 Pose B for a coordinated shoulder+elbow sweep."
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.9268
+    - -1.5736
+    - -1.3520
+    - -2.7486
+    - -1.5309
+    - 1.2791
+    velocity: []
+  multi_dof_joint_state:
+    header: {frame_id: "", stamp: {nanosec: 0, sec: 0}}
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: J2J3 Pose A
+- description: "Elbow/shoulder test pose B: j2=-0.87 (+40deg) j3=-0.65 (+40deg), both well inside limits. Coordinated shoulder+elbow ~40deg sweep."
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ""
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - j1
+    - j2
+    - j3
+    - j4
+    - j5
+    - j6
+    position:
+    - -0.9268
+    - -0.8700
+    - -0.6500
+    - -2.7486
+    - -1.5309
+    - 1.2791
+    velocity: []
+  multi_dof_joint_state:
+    header: {frame_id: "", stamp: {nanosec: 0, sec: 0}}
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: J2J3 Pose B
+- description: "Six-joint isolation test pose A6 (all-6 coordinated move, one end). Same envelope as the proven-safe j2/j3 sweep."
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ""
+      stamp: {nanosec: 0, sec: 0}
+    name: [j1, j2, j3, j4, j5, j6]
+    position:
+    - -0.9268
+    - -1.5736
+    - -1.3520
+    - -2.7486
+    - -1.5309
+    - 1.2791
+    velocity: []
+  multi_dof_joint_state:
+    header: {frame_id: "", stamp: {nanosec: 0, sec: 0}}
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: SixJoint Pose A
+- description: "Six-joint isolation test pose B6 (all-6 coordinated move, other end). Every joint offset from A6; all within limits."
+  favorite: false
+  joint_group_names:
+  - hand
+  - manipulator
+  joint_state:
+    effort: []
+    header:
+      frame_id: ""
+      stamp: {nanosec: 0, sec: 0}
+    name: [j1, j2, j3, j4, j5, j6]
+    position:
+    - -0.5268
+    - -0.8736
+    - -0.6520
+    - -2.3486
+    - -1.1309
+    - 0.8791
+    velocity: []
+  multi_dof_joint_state:
+    header: {frame_id: "", stamp: {nanosec: 0, sec: 0}}
+    joint_names: []
+    transforms: []
+    twist: []
+    wrench: []
+  name: SixJoint Pose B

@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 125  # Hz - the FR5 rejects faster ServoJ rates (error 14); matches the driver's 8 ms cmdT. See README.
+    update_rate: 625  # was 125; raised with ServoJ cmdT 0.008->0.0016 to run inside FR5 SDK recommended servo range [0.001-0.0016]s (625-1000Hz). Testing buffer/lurch fix 2026-08-27.
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -38,7 +38,7 @@ joint_trajectory_admittance_controller:
   ros__parameters:
     planning_group_name: manipulator
     sensor_frame: wrist3_link
-    ee_frame: wrist3_link
+    ee_frame: tool0
     ft_sensor_name: ""
     stop_accelerations: [30.0, 30.0, 30.0, 30.0, 30.0, 30.0]
     ft_cutoff_frequency_ratio: 1.0
@@ -84,7 +84,7 @@ joint_trajectory_controller:
 velocity_force_controller:
   ros__parameters:
     planning_group_name: manipulator
-    ee_frame: wrist3_link
+    ee_frame: tool0
     sensor_frame: wrist3_link
     ft_sensor_name: ""
     ft_force_deadband: 0.0
