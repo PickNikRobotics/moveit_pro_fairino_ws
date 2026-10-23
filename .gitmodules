@@ -1,3 +1,13 @@
 [submodule "src/external_dependencies/frcobot_ros2"]
 	path = src/external_dependencies/frcobot_ros2
 	url = https://github.com/PickNikRobotics/frcobot_ros2
+[submodule "src/external_dependencies/picknik_accessories"]
+	path = src/external_dependencies/picknik_accessories
+	url = https://github.com/PickNikRobotics/picknik_accessories.git
+# fanuc is checked out at top level (same SHA as picknik_accessories' nested copy)
+# so catkin_pkg.find_packages discovers fanuc_lrmate200id_support and its siblings.
+# Otherwise the walker stops at picknik_accessories/package.xml and never reaches the
+# deeper fanuc tree, breaking the picknik_accessories rosdep on fanuc_lrmate200id_support.
+[submodule "src/external_dependencies/fanuc"]
+	path = src/external_dependencies/fanuc
+	url = https://github.com/PickNikRobotics/fanuc.git
