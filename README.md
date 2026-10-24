@@ -1,15 +1,17 @@
 # MoveIt Pro Fairino Workspace
 
 A MoveIt Pro workspace for the Fairino FR5 robot, including a mock configuration
-(`fairino_mock`) and the upstream `frcobot_ros2` hardware driver as a submodule.
+(`fairino_mock`), a hardware configuration (`fairino_hw`) with a wrist-mounted
+RealSense D415, and the PickNik fork of the `frcobot_ros2` hardware driver as a
+submodule.
 
 For more information, refer to the [MoveIt Pro Documentation](https://docs.picknik.ai/).
 
 ## Cloning the workspace
 
 This repository uses **Git LFS** for mesh/3D assets (`.stl`, `.obj`, `.dae`, …)
-and a **Git submodule** for the Fairino driver. Both must be set up or the
-workspace will not build correctly.
+and **Git submodules** for the Fairino driver and `picknik_accessories`. Both
+must be set up or the workspace will not build correctly.
 
 ### 1. Install Git LFS (one-time, per machine)
 
@@ -91,7 +93,13 @@ A reply means you're on the robot's network and ready to launch the driver.
 >   `LOWER_UP`, then rebind: `sudo nmcli con mod fairino connection.interface-name "$ROBOT_IFACE" && sudo nmcli con up fairino`.
 > - To remove this connection later: `sudo nmcli con delete fairino`.
 
-### 4. Prepare the robot before launching the driver
+### 4. Check the controller software version
+
+The bundled `frcobot_ros2` driver uses the fairino SDK libfairino 2.3.8 and
+requires FR controller software **V3.9.8 or newer**. Upgrade the controller
+before using `fairino_hw`.
+
+### 5. Prepare the robot before launching the driver
 
 The MoveIt Pro driver streams `ServoJ` position commands to the controller. The
 controller will only accept them when the arm is **enabled**, in **Automatic

@@ -18,6 +18,31 @@
     <origin xyz="0 0 0.101" rpy="0 0 ${pi}" />
   </joint>
 
+  <!-- Wrist-mounted RealSense D415 on the PickNik UR-style camera adapter bracket,
+       used directly from the picknik_accessories package (same pattern as
+       picknik_ur_base_config's attachments macro). Parented to tool0 (the flange).
+       Bracket geometry is UR-designed, so the fit on the FR5 flange is nominal
+       (good for visualization + TF); swap the bracket or adjust origins for a real
+       Fairino mount. -->
+  <xacro:include
+    filename="$(find picknik_accessories)/descriptions/brackets/ur_realsense_camera_adapter/picknik_ur_camera_adapter.urdf.xacro" />
+  <xacro:include
+    filename="$(find picknik_accessories)/descriptions/sensors/realsense_d415.urdf.xacro" />
+
+  <xacro:ur_realsense_camera_adapter
+    prefix=""
+    parent="tool0"
+    child_tool="realsense_camera_adapter_tool0"
+    child_camera="d415_mount_link" />
+
+  <xacro:realsense_d415
+    parent="d415_mount_link"
+    name="wrist_mounted_camera"
+    use_nominal_extrinsics="true"
+    use_mesh="true">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:realsense_d415>
+
   <!-- ros2_control configuration for Fairino hardware -->
   <ros2_control name="FairinoSystem" type="system">
     <hardware>
